@@ -106,6 +106,26 @@
       box-shadow:0 0 0 3px rgba(31,95,153,.12);
     }
 
+    .date-holder{
+      position:relative;
+      width:100%;
+    }
+
+    #dateDisplay{
+      background:#fff;
+      color:#111827;
+      cursor:pointer;
+    }
+
+    .date-native{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      opacity:0;
+      cursor:pointer;
+    }
+
     .meal-row{
       display:grid;
       grid-template-columns:repeat(5,1fr);
@@ -387,7 +407,10 @@
         <h2 style="margin:0 0 8px;font-size:1.1rem">Add Daily Food Entry</h2>
 
         <label>Date</label>
-        <input type="date" id="date">
+        <div class="date-holder">
+          <input type="text" id="dateDisplay" readonly>
+          <input type="date" id="date" class="date-native" onchange="syncDateDisplay()">
+        </div>
 
         <label>Five Meals Taken Today</label>
 
@@ -550,7 +573,12 @@
       });
     }
 
+    function syncDateDisplay(){
+      document.getElementById('dateDisplay').value = formatIndianDate(document.getElementById('date').value);
+    }
+
     document.getElementById('date').value = todayDate();
+    syncDateDisplay();
 
     function save(){
       localStorage.setItem('foodAllergyEntriesV3', JSON.stringify(entries));
@@ -613,6 +641,7 @@
 
     function resetForm(){
       date.value = todayDate();
+      syncDateDisplay();
 
       ['breakfast','midBreakfast','lunch','snacks','dinner'].forEach(id => {
         document.getElementById(id).value = '';
