@@ -16,7 +16,42 @@
 <section class="card" style="margin-top:10px"><h2 style="margin:0 0 8px;font-size:1.1rem">Daily Food Log</h2><div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Breakfast</th><th>Mid Breakfast</th><th>Lunch</th><th>Snacks</th><th>Dinner</th><th>Severity</th><th>Suspected</th><th>Action</th></tr></thead><tbody id="tbody"></tbody><tfoot id="tfoot"></tfoot></table></div></section></main>
 <script>
 let entries=JSON.parse(localStorage.getItem('foodAllergyEntriesV3')||'[]');const suspectIds=['suspectBreakfast','suspectMidBreakfast','suspectLunch','suspectSnacks','suspectDinner'];
-function todayDate(){return new Date().toISOString().slice(0,10)}function formatIndianDate(x){if(!x)return'';let[y,m,d]=x.split('-');return `${d}-${m}-${y}`}function shortIndianDate(x){if(!x)return'';let[y,m,d]=x.split('-');return `${d}-${m}`}document.getElementById('date').value=todayDate();function save(){localStorage.setItem('foodAllergyEntriesV3',JSON.stringify(entries))}
+function todayDate(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function formatIndianDate(x){
+  if(!x) return '';
+  const [y, m, d] = x.split('-');
+  const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
+
+  return dateObj.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function shortIndianDate(x){
+  if(!x) return '';
+  const [y, m, d] = x.split('-');
+  const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
+
+  return dateObj.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short'
+  });
+}
+
+document.getElementById('date').value = todayDate();
+
+function save(){
+  localStorage.setItem('foodAllergyEntriesV3', JSON.stringify(entries));
+}
 function toggleSuspect(id){const b=document.getElementById(id);b.classList.toggle('active');b.textContent=b.classList.contains('active')?'✖':'□'}function isSuspect(id){return document.getElementById(id).classList.contains('active')}
 function getSuspectedMeals(e){let a=[];if(e.suspectBreakfast&&e.breakfast)a.push(e.breakfast);if(e.suspectMidBreakfast&&e.midBreakfast)a.push(e.midBreakfast);if(e.suspectLunch&&e.lunch)a.push(e.lunch);if(e.suspectSnacks&&e.snacks)a.push(e.snacks);if(e.suspectDinner&&e.dinner)a.push(e.dinner);return a}
 function addEntry(){let e={id:Date.now(),date:date.value,breakfast:breakfast.value.trim(),midBreakfast:midBreakfast.value.trim(),lunch:lunch.value.trim(),snacks:snacks.value.trim(),dinner:dinner.value.trim(),suspectBreakfast:isSuspect('suspectBreakfast'),suspectMidBreakfast:isSuspect('suspectMidBreakfast'),suspectLunch:isSuspect('suspectLunch'),suspectSnacks:isSuspect('suspectSnacks'),suspectDinner:isSuspect('suspectDinner'),severity:Number(severity.value)};if(!e.date||!(e.breakfast||e.midBreakfast||e.lunch||e.snacks||e.dinner)){alert('Please enter date and at least one meal.');return}let has=getSuspectedMeals(e).length>0;if(has&&e.severity===0)e.severity=1;if(!has)e.severity=0;entries.push(e);save();resetForm();render()}
