@@ -1,1119 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Daily Food Allergy Tracker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#123c69">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Allergy Calorie">
+<title>Allergy + Calorie Meter</title>
 
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#123c69">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Food Allergy">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-  <style>
-    :root{
-      --bg:#f4f7fb;
-      --card:#fff;
-      --primary:#123c69;
-      --danger:#c62828;
-      --safe:#2e7d32;
-      --muted:#6b7280;
-      --line:#dbe3ef;
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-      background:var(--bg);
-      color:#111827;
-    }
-
-    .app{
-      max-width:1100px;
-      margin:auto;
-      padding:10px 10px 32px;
-    }
-
-    .header{
-      background:linear-gradient(135deg,var(--primary),#1f5f99);
-      color:#fff;
-      border-radius:20px;
-      padding:12px;
-      box-shadow:0 10px 25px rgba(18,60,105,.22);
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .app-icon{
-      width:56px;
-      height:56px;
-      border-radius:16px;
-      box-shadow:0 8px 18px rgba(0,0,0,.22);
-    }
-
-    h1{
-      margin:0;
-      font-size:1.2rem;
-    }
-
-    .header small{
-      display:block;
-      margin-top:3px;
-      opacity:.9;
-      font-weight:600;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:12px;
-      box-shadow:0 6px 18px rgba(17,24,39,.06);
-    }
-
-    label{
-      display:block;
-      font-weight:800;
-      font-size:.82rem;
-      margin:6px 0 4px;
-      color:#243447;
-    }
-
-    input,select{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px;
-      font-size:.94rem;
-      outline:none;
-      background:#fff;
-    }
-
-    input:focus,select:focus{
-      border-color:#1f5f99;
-      box-shadow:0 0 0 3px rgba(31,95,153,.12);
-    }
-
-    .date-holder{
-      position:relative;
-      width:100%;
-    }
-
-    #dateDisplay{
-      background:#fff;
-      color:#111827;
-      cursor:pointer;
-    }
-
-    .date-native{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      opacity:0;
-      cursor:pointer;
-    }
-
-    .meal-row{
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:8px;
-      margin-top:8px;
-    }
-
-    .meal-box{
-      border:1px solid var(--line);
-      background:#f8fafc;
-      border-radius:14px;
-      padding:8px;
-    }
-
-    .meal-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:6px;
-      margin-bottom:6px;
-    }
-
-    .meal-title{
-      font-size:.78rem;
-      font-weight:900;
-      color:#374151;
-    }
-
-    .suspect-btn{
-      width:28px;
-      height:28px;
-      border-radius:9px;
-      border:1px solid #cbd5e1;
-      background:white;
-      color:#9ca3af;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:1rem;
-      font-weight:1000;
-      padding:0;
-      cursor:pointer;
-    }
-
-    .suspect-btn.active{
-      background:#fde8e8;
-      color:var(--danger);
-      border-color:#ef9a9a;
-      box-shadow:0 0 0 3px rgba(198,40,40,.08);
-    }
-
-    button{
-      border:0;
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:900;
-      cursor:pointer;
-      font-size:.95rem;
-    }
-
-    .btn-primary{
-      background:var(--primary);
-      color:white;
-      width:100%;
-      margin-top:12px;
-    }
-
-    .btn-install{
-      background:#0f766e;
-      color:white;
-      width:100%;
-      display:none;
-      margin-top:9px;
-    }
-
-    .btn-secondary{
-      background:#e8eef7;
-      color:#123c69;
-    }
-
-    .btn-danger{
-      background:#fde8e8;
-      color:var(--danger);
-    }
-
-    .btn-safe{
-      background:#e8f5e9;
-      color:var(--safe);
-    }
-
-    .toolbar{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:10px;
-    }
-
-    .toolbar button{
-      flex:1;
-      min-width:120px;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:10px;
-      font-size:.86rem;
-    }
-
-    th,td{
-      padding:8px;
-      border-bottom:1px solid var(--line);
-      vertical-align:top;
-      text-align:left;
-    }
-
-    th{
-      background:#f8fafc;
-      color:#374151;
-      font-size:.72rem;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-    }
-
-    .result-row{
-      background:#fff8e1;
-      border:2px solid #f0b429;
-      font-weight:900;
-    }
-
-    .risk-high{
-      color:var(--danger);
-      font-weight:900;
-    }
-
-    .risk-medium{
-      color:#ef6c00;
-      font-weight:900;
-    }
-
-    .risk-low{
-      color:var(--safe);
-      font-weight:900;
-    }
-
-    .pill{
-      display:inline-block;
-      padding:4px 8px;
-      border-radius:999px;
-      font-weight:900;
-      font-size:.74rem;
-    }
-
-    .pill-suspect{
-      background:#fde8e8;
-      color:var(--danger);
-    }
-
-    .pill-normal{
-      background:#e8f5e9;
-      color:var(--safe);
-    }
-
-    .summary-box{
-      background:#f8fafc;
-      border:1px dashed #b6c5d8;
-      border-radius:16px;
-      padding:12px;
-      margin-top:10px;
-      line-height:1.45;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:.88rem;
-    }
-
-    .small{
-      font-size:.8rem;
-      color:var(--muted);
-    }
-
-    .chart-wrap{
-      margin-top:8px;
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:8px;
-      overflow:hidden;
-    }
-
-    canvas{
-      width:100%;
-      height:220px;
-      display:block;
-    }
-
-    .red-cross{
-      color:var(--danger);
-      font-weight:1000;
-      margin-left:4px;
-    }
-
-    @media(max-width:860px){
-      .grid{
-        grid-template-columns:1fr;
-      }
-
-      .meal-row{
-        grid-template-columns:1fr 1fr;
-      }
-
-      .meal-row .meal-box:last-child{
-        grid-column:1/-1;
-      }
-
-      table{
-        font-size:.76rem;
-      }
-
-      th,td{
-        padding:6px;
-      }
-
-      .card{
-        padding:10px;
-        border-radius:16px;
-      }
-    }
-
-    @media(max-width:480px){
-      .app{
-        padding:8px;
-      }
-
-      .app-icon{
-        width:50px;
-        height:50px;
-        border-radius:14px;
-      }
-
-      input,select{
-        padding:9px;
-        font-size:.9rem;
-      }
-
-      .meal-box{
-        padding:7px;
-      }
-
-      .suspect-btn{
-        width:26px;
-        height:26px;
-      }
-
-      canvas{
-        height:200px;
-      }
-    }
-  </style>
+<style>
+:root{
+  --bg:#f4f7fb;--card:#fff;--primary:#123c69;--primary2:#0b2948;
+  --danger:#c62828;--safe:#2e7d32;--warn:#ef6c00;--muted:#6b7280;
+  --line:#dbe3ef;--soft:#eef4fb;--gold:#f5b041;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#162033}
+.app{max-width:520px;margin:0 auto;min-height:100vh;padding:10px 10px 24px}
+.header{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;border-radius:20px;padding:13px 14px;margin-bottom:9px;
+  box-shadow:0 7px 18px rgba(18,60,105,.22)
+}
+.header h1{margin:0;font-size:19px;line-height:1.15}
+.header p{margin:4px 0 0;font-size:12px;opacity:.9}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:10px;margin-bottom:9px;box-shadow:0 4px 12px rgba(29,52,78,.05)
+}
+.card-title{
+  margin:0 0 8px;font-size:15px;color:var(--primary);font-weight:900;
+  display:flex;justify-content:space-between;align-items:center;gap:6px
+}
+label{display:block;font-size:11px;color:var(--muted);font-weight:800;margin-bottom:3px}
+input,select,button{font-family:inherit}
+input,select{
+  width:100%;border:1px solid var(--line);border-radius:11px;padding:8px 9px;
+  font-size:14px;background:#fff;outline:none
+}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(18,60,105,.09)}
+.top-grid{display:grid;grid-template-columns:1fr 105px;gap:7px;margin-bottom:7px}
+.meal{
+  border:1px solid var(--line);border-radius:14px;background:#fbfdff;
+  padding:7px;margin-bottom:6px
+}
+.meal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.meal-name{font-weight:900;color:var(--primary);font-size:12px}
+.meal-grid{display:grid;grid-template-columns:1fr 72px 46px;gap:5px;align-items:center}
+.cal-box{text-align:center;font-weight:900;color:var(--safe);padding-left:4px;padding-right:4px}
+.suspect{
+  border:1px solid var(--line);background:#fff;color:var(--muted);
+  border-radius:10px;padding:8px 0;font-size:15px;font-weight:900;cursor:pointer
+}
+.suspect.active{background:#ffebee;color:var(--danger);border-color:#ef9a9a}
+.hint{font-size:11px;color:var(--muted);line-height:1.25;margin:5px 0 0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.btn-main{
+  width:100%;border:0;border-radius:13px;padding:11px;font-size:15px;
+  font-weight:900;color:#fff;background:linear-gradient(135deg,var(--primary),#1f5d99);
+  box-shadow:0 6px 14px rgba(18,60,105,.18);cursor:pointer
+}
+.toolbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:7px}
+.btn-small{
+  border:1px solid var(--line);border-radius:11px;padding:8px 6px;background:#fff;
+  font-weight:900;color:var(--primary);font-size:12px;cursor:pointer
+}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:13px;padding:7px;text-align:center}
+.num{font-size:17px;font-weight:950;color:var(--primary);line-height:1.05}
+.lbl{font-size:10px;color:var(--muted);font-weight:800;margin-top:2px}
+.safe .num{color:var(--safe)}.danger .num{color:var(--danger)}.warn .num{color:var(--warn)}
+.meter{height:12px;border:1px solid var(--line);border-radius:99px;background:#edf4fb;overflow:hidden;margin-top:8px}
+.meter-fill{height:100%;width:0;background:linear-gradient(90deg,var(--safe),#81c784);transition:.25s}
+.meter-fill.over{background:linear-gradient(90deg,var(--danger),#ef5350)}
+canvas{width:100%;height:180px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:5px}
+.summary-line{border-bottom:1px dashed var(--line);padding:7px 0;font-size:13px}
+.summary-line:last-child{border-bottom:0}
+.pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:900;background:#eef4fb;color:var(--primary);margin-left:3px}
+.pill.red{background:#ffebee;color:var(--danger)}.pill.green{background:#e8f5e9;color:var(--safe)}.pill.orange{background:#fff3e0;color:var(--warn)}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:760px;background:#fff}
+th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+th{background:#eef4fb;color:var(--primary);font-weight:900}
+.delete-btn{border:0;background:#ffebee;color:var(--danger);font-weight:900;border-radius:8px;padding:5px 8px}
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:14px 5px}
+.muted{color:var(--muted);font-size:12px}
+.hide-log{display:none}
+@media(max-width:420px){
+  .app{padding:8px}
+  .header h1{font-size:18px}
+  .stats{grid-template-columns:1fr 1fr}
+  .meal-grid{grid-template-columns:1fr 64px 42px}
+  input,select{font-size:13px;padding:8px}
+}
+</style>
 </head>
 
 <body>
-  <main class="app">
+<div class="app">
+  <div class="header">
+    <h1>Daily Food Allergy + Calorie Meter</h1>
+    <p>Compact offline tracker with auto calorie estimate and suspected allergy marking.</p>
+  </div>
 
-    <section class="header">
-      <img class="app-icon" src="icon-192.png" alt="App icon">
+  <div class="card">
+    <h2 class="card-title">Today’s Entry</h2>
+
+    <div class="top-grid">
       <div>
-        <h1>Daily Food Allergy Tracker</h1>
-        <small>Tap ✖ against suspected meal</small>
-      </div>
-    </section>
-
-    <button id="installBtn" class="btn-install">Install App</button>
-
-    <section class="grid">
-
-      <div class="card">
-        <h2 style="margin:0 0 8px;font-size:1.1rem">Add Daily Food Entry</h2>
-
         <label>Date</label>
-        <div class="date-holder">
-          <input type="text" id="dateDisplay" readonly>
-          <input type="date" id="date" class="date-native" onchange="syncDateDisplay()">
-        </div>
+        <input type="date" id="entryDate">
+      </div>
+      <div>
+        <label>Target kcal</label>
+        <input type="number" id="calorieTarget" min="0" placeholder="1800">
+      </div>
+    </div>
 
-        <label>Five Meals Taken Today</label>
+    <div id="mealsContainer"></div>
 
-        <div class="meal-row">
-
-          <div class="meal-box">
-            <div class="meal-top">
-              <span class="meal-title">Breakfast</span>
-              <button class="suspect-btn" id="suspectBreakfast" type="button" onclick="toggleSuspect('suspectBreakfast')">□</button>
-            </div>
-            <input id="breakfast" placeholder="Breakfast">
-          </div>
-
-          <div class="meal-box">
-            <div class="meal-top">
-              <span class="meal-title">Mid breakfast</span>
-              <button class="suspect-btn" id="suspectMidBreakfast" type="button" onclick="toggleSuspect('suspectMidBreakfast')">□</button>
-            </div>
-            <input id="midBreakfast" placeholder="Mid breakfast">
-          </div>
-
-          <div class="meal-box">
-            <div class="meal-top">
-              <span class="meal-title">Lunch</span>
-              <button class="suspect-btn" id="suspectLunch" type="button" onclick="toggleSuspect('suspectLunch')">□</button>
-            </div>
-            <input id="lunch" placeholder="Lunch">
-          </div>
-
-          <div class="meal-box">
-            <div class="meal-top">
-              <span class="meal-title">Snacks</span>
-              <button class="suspect-btn" id="suspectSnacks" type="button" onclick="toggleSuspect('suspectSnacks')">□</button>
-            </div>
-            <input id="snacks" placeholder="Snacks">
-          </div>
-
-          <div class="meal-box">
-            <div class="meal-top">
-              <span class="meal-title">Dinner</span>
-              <button class="suspect-btn" id="suspectDinner" type="button" onclick="toggleSuspect('suspectDinner')">□</button>
-            </div>
-            <input id="dinner" placeholder="Dinner">
-          </div>
-
-        </div>
-
-        <label>Severity</label>
+    <div class="row">
+      <div>
+        <label>Allergy Severity</label>
         <select id="severity">
-          <option value="0">0 - None</option>
-          <option value="1">1 - Very mild</option>
-          <option value="2">2 - Mild</option>
-          <option value="3">3 - Moderate</option>
-          <option value="4">4 - High</option>
-          <option value="5">5 - Severe</option>
+          <option value="0">0 None</option>
+          <option value="1">1 Very mild</option>
+          <option value="2">2 Mild</option>
+          <option value="3">3 Moderate</option>
+          <option value="4">4 High</option>
+          <option value="5">5 Severe</option>
         </select>
-
-        <button class="btn-primary" onclick="addEntry()">Add Entry</button>
-
-        <h3 style="font-size:1rem;margin:14px 0 5px">Weekly Allergy Ranking Line Graph</h3>
-
-        <div class="chart-wrap">
-          <canvas id="weeklyChart" width="1000" height="320"></canvas>
-        </div>
-
-        <p class="small">Higher line means higher allergy severity score on that date.</p>
-        <p class="small">Tap the small box against a meal to mark it suspected. This tracker only helps identify a pattern.</p>
       </div>
-
-      <div class="card">
-        <h2 style="margin:0 0 8px;font-size:1.1rem">Result Summary</h2>
-
-        <div id="summary" class="summary-box">
-          No entries yet. Add daily entries to generate allergy analysis.
-        </div>
-
-        <div class="toolbar">
-          <button class="btn-secondary" onclick="downloadCSV()">Download CSV</button>
-          <button class="btn-safe" onclick="sampleData()">Add Sample</button>
-          <button class="btn-danger" onclick="clearAll()">Clear All</button>
-        </div>
-
-        <h3 style="font-size:1rem;margin:16px 0 5px">Suspected Food Ranking</h3>
-
-        <div id="ranking" class="summary-box">
-          Ranking will appear after entries are added.
-        </div>
+      <div>
+        <label>Notes</label>
+        <input type="text" id="notes" placeholder="Optional">
       </div>
+    </div>
 
-    </section>
+    <button class="btn-main" onclick="addEntry()">Add Entry</button>
 
-    <section class="card" style="margin-top:10px">
-      <h2 style="margin:0 0 8px;font-size:1.1rem">Daily Food Log</h2>
+    <div class="toolbar">
+      <button class="btn-small" onclick="addSample()">Sample</button>
+      <button class="btn-small" onclick="exportCSV()">CSV</button>
+      <button class="btn-small" onclick="clearAll()">Clear</button>
+    </div>
 
-      <div style="overflow-x:auto">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Breakfast</th>
-              <th>Mid Breakfast</th>
-              <th>Lunch</th>
-              <th>Snacks</th>
-              <th>Dinner</th>
-              <th>Severity</th>
-              <th>Suspected</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+    <div class="hint">
+      Type like: <b>2 roti, dal, rice, 5 almonds</b>. Calories auto-fill. You may correct them manually.
+    </div>
+  </div>
 
-          <tbody id="tbody"></tbody>
-          <tfoot id="tfoot"></tfoot>
-        </table>
+  <div class="card">
+    <h2 class="card-title">Today’s Meter</h2>
+    <div class="stats">
+      <div class="stat"><div class="num" id="todayCalories">0</div><div class="lbl">Today kcal</div></div>
+      <div class="stat"><div class="num" id="targetCalories">0</div><div class="lbl">Target</div></div>
+      <div class="stat safe" id="remainingBox"><div class="num" id="remainingCalories">0</div><div class="lbl">Left/Extra</div></div>
+      <div class="stat"><div class="num" id="todaySeverity">0/5</div><div class="lbl">Severity</div></div>
+    </div>
+    <div class="meter"><div class="meter-fill" id="calorieMeterFill"></div></div>
+    <div class="hint" id="calorieAdvice">Start entering food items.</div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Weekly Calories</h2>
+    <canvas id="calorieChart" width="500" height="210"></canvas>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Weekly Allergy Severity</h2>
+    <canvas id="severityChart" width="500" height="210"></canvas>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Summary</h2>
+    <div id="resultSummary"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Suspected Food Ranking</h2>
+    <div id="ranking"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">
+      Daily Log
+      <button class="btn-small" onclick="toggleLog()" style="padding:5px 9px">Show/Hide</button>
+    </h2>
+    <div class="table-wrap hide-log" id="logWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Breakfast</th><th>Mid</th><th>Lunch</th><th>Snacks</th><th>Dinner</th>
+            <th>Calories</th><th>Severity</th><th>Suspected</th><th>Notes</th><th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const mealNames=["Breakfast","Mid-breakfast","Lunch","Snacks","Dinner"];
+let entries=JSON.parse(localStorage.getItem("allergyCalorieEntriesV2")||"[]");
+let learnedCalories=JSON.parse(localStorage.getItem("learnedCaloriesV2")||"{}");
+let savedTarget=localStorage.getItem("dailyCalorieTargetV2")||"1800";
+
+/*
+Approximate Indian household calories.
+Mostly per normal serving/piece:
+roti=1 medium, dal=1 bowl, rice=1 bowl, almonds=1 piece.
+*/
+const baseCalories={
+  "roti":100,"chapati":100,"phulka":80,"tandoori roti":120,"naan":260,"butter naan":320,
+  "paratha":250,"plain paratha":220,"aloo paratha":300,"paneer paratha":340,"methi paratha":260,
+  "puri":90,"bhatura":230,"bread":75,"brown bread":70,"toast":80,"butter toast":120,
+  "sandwich":300,"veg sandwich":280,"cheese sandwich":420,
+
+  "rice":220,"plain rice":220,"boiled rice":210,"brown rice":215,"jeera rice":260,
+  "pulao":300,"veg pulao":310,"biryani":450,"veg biryani":420,"chicken biryani":550,
+  "khichdi":300,"dalia":220,"oats":150,"cornflakes":120,"muesli":180,
+
+  "dal":180,"dal tadka":230,"moong dal":160,"masoor dal":170,"arhar dal":190,
+  "rajma":260,"chole":280,"kadhi":180,"sambar":150,"rasam":70,
+
+  "sabzi":180,"mixed veg":180,"aloo sabzi":230,"bhindi":160,"lauki":110,"tori":110,
+  "gobhi":160,"baingan":160,"palak":120,"paneer sabzi":350,"paneer":265,
+  "matar paneer":380,"palak paneer":330,"shahi paneer":450,
+
+  "curd":100,"dahi":100,"raita":120,"buttermilk":45,"chaas":45,"lassi":180,
+  "milk":150,"toned milk":120,"skimmed milk":90,"tea":70,"milk tea":70,"black tea":5,
+  "green tea":2,"coffee":80,"black coffee":5,"coconut water":45,"juice":110,
+  "orange juice":110,"soft drink":140,"soda":0,"lemon water":30,
+
+  "poha":280,"upma":260,"idli":60,"dosa":180,"masala dosa":350,"uttapam":250,
+  "chilla":180,"besan chilla":200,"moong chilla":180,"sprouts":120,
+  "boiled egg":75,"egg":75,"omelette":180,"egg bhurji":220,
+
+  "apple":95,"banana":105,"orange":60,"papaya":60,"guava":70,"mango":150,
+  "grapes":70,"watermelon":45,"muskmelon":50,"pomegranate":120,"pear":100,
+  "kiwi":55,"pineapple":80,"strawberry":50,"chikoo":140,"custard apple":180,
+  "dates":23,"date":23,"fig":40,"anjeer":40,
+
+  "almond":7,"badam":7,"walnut":26,"akhrot":26,"cashew":9,"kaju":9,
+  "pistachio":4,"pista":4,"raisin":3,"kishmish":3,"peanut":6,"moongfali":6,
+  "peanut butter":95,"makhana":100,"roasted chana":160,"chana":160,
+  "flax seed":55,"chia seed":60,"sunflower seed":55,"pumpkin seed":55,
+
+  "biscuit":45,"cookies":60,"namkeen":170,"chips":160,"samosa":260,"kachori":250,
+  "pakora":250,"dhokla":160,"murmura":60,"bhel":180,"sev":180,"mathri":150,
+  "toast biscuit":40,"rusk":40,"cracker":35,
+
+  "gulab jamun":150,"rasgulla":120,"jalebi":150,"laddu":180,"barfi":180,
+  "halwa":300,"suji halwa":300,"gajar halwa":320,"kheer":220,"ice cream":220,
+  "chocolate":120,"cake":300,
+
+  "chicken curry":350,"grilled chicken":250,"fish curry":300,"fish fry":350,
+  "mutton curry":450,"chicken":250,"fish":220,"mutton":400,
+
+  "ghee":45,"butter":36,"oil":45,"olive oil":45,"mustard oil":45,"coconut oil":45,
+  "cheese":80,"cream":100,"mayonnaise":90,"sugar":20,"jaggery":20,"honey":21,
+
+  "salad":50,"cucumber":15,"tomato":20,"carrot":30,"onion":20,"soup":90,
+  "veg soup":90,"tomato soup":100,"clear soup":50
+};
+
+function foodDB(){
+  return {...baseCalories,...learnedCalories};
+}
+
+function isoToday(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function formatIndianDate(iso){
+  if(!iso)return"";
+  const [y,m,d]=iso.split("-");
+  return `${d}-${m}-${y}`;
+}
+function shortIndianDate(iso){
+  if(!iso)return"";
+  const [y,m,d]=iso.split("-");
+  return `${d}-${m}`;
+}
+function norm(s){
+  return String(s||"").toLowerCase().trim().replace(/\s+/g," ");
+}
+function splitFoods(text){
+  return String(text||"").split(/[,،;]+/).map(x=>x.trim()).filter(Boolean);
+}
+function extractQuantity(item){
+  let s=norm(item);
+  let qty=1;
+
+  const m=s.match(/^(\d+(\.\d+)?)/);
+  if(m){
+    qty=parseFloat(m[1]);
+    s=s.replace(/^(\d+(\.\d+)?)\s*/,"");
+  }
+
+  s=s.replace(/^(one|ek)\s+/,"");
+  s=s.replace(/^(a|an|half|medium|small|large)\s+/,"");
+
+  const unitWords=[
+    "piece","pieces","pc","pcs","bowl","bowls","cup","cups","glass","glasses",
+    "plate","plates","serving","servings","slice","slices","spoon","spoons",
+    "tbsp","tsp","katori","katoris"
+  ];
+  const re=new RegExp("^("+unitWords.join("|")+")\\s+");
+  s=s.replace(re,"");
+
+  return {qty,name:s.trim()};
+}
+function findCalorieForItem(raw){
+  const db=foodDB();
+  const {qty,name}=extractQuantity(raw);
+  if(!name)return 0;
+
+  if(db[name]!=null)return Math.round(qty*db[name]);
+
+  let bestKey="";
+  Object.keys(db).forEach(k=>{
+    if(name===k || name.includes(k) || k.includes(name)){
+      if(k.length>bestKey.length)bestKey=k;
+    }
+  });
+
+  return bestKey ? Math.round(qty*db[bestKey]) : 0;
+}
+function estimateCalories(text){
+  return splitFoods(text).reduce((sum,item)=>sum+findCalorieForItem(item),0);
+}
+function makeMealInputs(){
+  const box=document.getElementById("mealsContainer");
+  box.innerHTML="";
+  mealNames.forEach((meal,i)=>{
+    const div=document.createElement("div");
+    div.className="meal";
+    div.innerHTML=`
+      <div class="meal-top">
+        <div class="meal-name">${meal}</div>
+        <div class="muted" id="found${i}">Auto</div>
       </div>
-    </section>
+      <div class="meal-grid">
+        <input type="text" id="meal${i}" placeholder="${meal} food" oninput="autoFillCalories(${i})">
+        <input type="number" id="cal${i}" class="cal-box" min="0" placeholder="kcal">
+        <button type="button" class="suspect" id="suspect${i}" onclick="toggleSuspect(${i})">✖</button>
+      </div>
+    `;
+    box.appendChild(div);
+  });
+}
+function autoFillCalories(i){
+  const food=document.getElementById(`meal${i}`).value;
+  const cal=estimateCalories(food);
+  const calBox=document.getElementById(`cal${i}`);
+  const found=document.getElementById(`found${i}`);
+  if(food.trim()){
+    calBox.value=cal || "";
+    found.textContent=cal ? "Auto" : "Manual";
+    found.style.color=cal ? "var(--safe)" : "var(--warn)";
+  }else{
+    calBox.value="";
+    found.textContent="Auto";
+    found.style.color="var(--muted)";
+  }
+}
+function toggleSuspect(i){
+  const b=document.getElementById(`suspect${i}`);
+  b.classList.toggle("active");
+}
+function saveData(){
+  localStorage.setItem("allergyCalorieEntriesV2",JSON.stringify(entries));
+  localStorage.setItem("learnedCaloriesV2",JSON.stringify(learnedCalories));
+  localStorage.setItem("dailyCalorieTargetV2",document.getElementById("calorieTarget").value||"0");
+}
+function learnFromMeal(food,totalCal){
+  food=norm(food);
+  totalCal=Number(totalCal||0);
+  if(!food||!totalCal)return;
 
-  </main>
+  const known=estimateCalories(food);
 
-  <script>
-    let entries = JSON.parse(localStorage.getItem('foodAllergyEntriesV3') || '[]');
-
-    const suspectIds = [
-      'suspectBreakfast',
-      'suspectMidBreakfast',
-      'suspectLunch',
-      'suspectSnacks',
-      'suspectDinner'
-    ];
-
-    function todayDate(){
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-
-    function formatIndianDate(x){
-      if(!x) return '';
-
-      const [y, m, d] = x.split('-');
-      const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
-
-      return dateObj.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
-    }
-
-    function shortIndianDate(x){
-      if(!x) return '';
-
-      const [y, m, d] = x.split('-');
-      const dateObj = new Date(Number(y), Number(m) - 1, Number(d));
-
-      return dateObj.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short'
-      });
-    }
-
-    function syncDateDisplay(){
-      document.getElementById('dateDisplay').value = formatIndianDate(document.getElementById('date').value);
-    }
-
-    document.getElementById('date').value = todayDate();
-    syncDateDisplay();
-
-    function save(){
-      localStorage.setItem('foodAllergyEntriesV3', JSON.stringify(entries));
-    }
-
-    function toggleSuspect(id){
-      const b = document.getElementById(id);
-      b.classList.toggle('active');
-      b.textContent = b.classList.contains('active') ? '✖' : '□';
-    }
-
-    function isSuspect(id){
-      return document.getElementById(id).classList.contains('active');
-    }
-
-    function getSuspectedMeals(e){
-      let a = [];
-
-      if(e.suspectBreakfast && e.breakfast) a.push(e.breakfast);
-      if(e.suspectMidBreakfast && e.midBreakfast) a.push(e.midBreakfast);
-      if(e.suspectLunch && e.lunch) a.push(e.lunch);
-      if(e.suspectSnacks && e.snacks) a.push(e.snacks);
-      if(e.suspectDinner && e.dinner) a.push(e.dinner);
-
-      return a;
-    }
-
-    function addEntry(){
-      let e = {
-        id: Date.now(),
-        date: date.value,
-        breakfast: breakfast.value.trim(),
-        midBreakfast: midBreakfast.value.trim(),
-        lunch: lunch.value.trim(),
-        snacks: snacks.value.trim(),
-        dinner: dinner.value.trim(),
-        suspectBreakfast: isSuspect('suspectBreakfast'),
-        suspectMidBreakfast: isSuspect('suspectMidBreakfast'),
-        suspectLunch: isSuspect('suspectLunch'),
-        suspectSnacks: isSuspect('suspectSnacks'),
-        suspectDinner: isSuspect('suspectDinner'),
-        severity: Number(severity.value)
-      };
-
-      if(!e.date || !(e.breakfast || e.midBreakfast || e.lunch || e.snacks || e.dinner)){
-        alert('Please enter date and at least one meal.');
-        return;
+  if(!known || Math.abs(known-totalCal)>25){
+    const parts=splitFoods(food);
+    if(parts.length===1){
+      const item=extractQuantity(parts[0]);
+      if(item.name){
+        learnedCalories[item.name]=Math.round(totalCal/(item.qty||1));
       }
-
-      let has = getSuspectedMeals(e).length > 0;
-
-      if(has && e.severity === 0) e.severity = 1;
-      if(!has) e.severity = 0;
-
-      entries.push(e);
-      save();
-      resetForm();
-      render();
+    }else{
+      learnedCalories[food]=totalCal;
     }
+  }
+}
+function addEntry(){
+  const date=document.getElementById("entryDate").value||isoToday();
+  const severity=Number(document.getElementById("severity").value||0);
+  const notes=document.getElementById("notes").value.trim();
 
-    function resetForm(){
-      date.value = todayDate();
-      syncDateDisplay();
+  const meals=mealNames.map((name,i)=>{
+    const food=document.getElementById(`meal${i}`).value.trim();
+    const calories=Number(document.getElementById(`cal${i}`).value||0);
+    const suspected=document.getElementById(`suspect${i}`).classList.contains("active");
+    learnFromMeal(food,calories);
+    return {name,food,calories,suspected};
+  });
 
-      ['breakfast','midBreakfast','lunch','snacks','dinner'].forEach(id => {
-        document.getElementById(id).value = '';
+  const totalCalories=meals.reduce((s,m)=>s+Number(m.calories||0),0);
+
+  entries.push({id:Date.now(),date,meals,totalCalories,severity,notes});
+  entries.sort((a,b)=>a.date.localeCompare(b.date));
+  saveData();
+  resetForm(false);
+  renderAll();
+}
+function resetForm(resetDate=true){
+  if(resetDate)document.getElementById("entryDate").value=isoToday();
+  mealNames.forEach((m,i)=>{
+    document.getElementById(`meal${i}`).value="";
+    document.getElementById(`cal${i}`).value="";
+    document.getElementById(`suspect${i}`).classList.remove("active");
+    document.getElementById(`found${i}`).textContent="Auto";
+    document.getElementById(`found${i}`).style.color="var(--muted)";
+  });
+  document.getElementById("severity").value="0";
+  document.getElementById("notes").value="";
+}
+function addSample(){
+  entries.push({
+    id:Date.now(),date:isoToday(),
+    meals:[
+      {name:"Breakfast",food:"poha, tea, 5 almonds",calories:385,suspected:false},
+      {name:"Mid-breakfast",food:"apple",calories:95,suspected:false},
+      {name:"Lunch",food:"2 roti, dal, rice, curd",calories:700,suspected:false},
+      {name:"Snacks",food:"biscuit, tea",calories:115,suspected:true},
+      {name:"Dinner",food:"soup, roti, sabzi",calories:370,suspected:false}
+    ],
+    totalCalories:1665,severity:2,notes:"Sample"
+  });
+  saveData();renderAll();
+}
+function deleteEntry(id){
+  entries=entries.filter(e=>e.id!==id);
+  saveData();renderAll();
+}
+function clearAll(){
+  if(!confirm("Delete all saved entries?"))return;
+  entries=[];saveData();renderAll();
+}
+function getTodayEntries(){
+  const today=document.getElementById("entryDate").value||isoToday();
+  return entries.filter(e=>e.date===today);
+}
+function updateMeter(){
+  const target=Number(document.getElementById("calorieTarget").value||0);
+  const todayEntries=getTodayEntries();
+  const todayCalories=todayEntries.reduce((s,e)=>s+Number(e.totalCalories||0),0);
+  const latestSeverity=todayEntries.length?todayEntries[todayEntries.length-1].severity:0;
+  const remaining=target-todayCalories;
+
+  document.getElementById("todayCalories").textContent=todayCalories;
+  document.getElementById("targetCalories").textContent=target;
+  document.getElementById("remainingCalories").textContent=Math.abs(remaining);
+  document.getElementById("todaySeverity").textContent=`${latestSeverity}/5`;
+
+  const box=document.getElementById("remainingBox");
+  const fill=document.getElementById("calorieMeterFill");
+  const advice=document.getElementById("calorieAdvice");
+  box.className="stat";
+
+  if(!target){
+    fill.style.width="0%";fill.classList.remove("over");
+    advice.textContent="Set target calories.";
+    return;
+  }
+
+  fill.style.width=`${Math.min(todayCalories/target*100,100)}%`;
+
+  if(remaining>=0){
+    box.classList.add("safe");fill.classList.remove("over");
+    advice.innerHTML=`Within target. Remaining <b>${remaining} kcal</b>.`;
+  }else{
+    box.classList.add("danger");fill.classList.add("over");
+    advice.innerHTML=`Target crossed by <b>${Math.abs(remaining)} kcal</b>.`;
+  }
+}
+function last7Dates(){
+  const arr=[],base=new Date();
+  for(let i=6;i>=0;i--){
+    const d=new Date(base);d.setDate(base.getDate()-i);
+    arr.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`);
+  }
+  return arr;
+}
+function dailyTotalCalories(date){
+  return entries.filter(e=>e.date===date).reduce((s,e)=>s+Number(e.totalCalories||0),0);
+}
+function dailyMaxSeverity(date){
+  const list=entries.filter(e=>e.date===date);
+  return list.length?Math.max(...list.map(e=>Number(e.severity||0))):0;
+}
+function drawChart(id,labels,values,maxValue,title){
+  const c=document.getElementById(id),ctx=c.getContext("2d"),w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const L=38,R=14,T=28,B=38,CW=w-L-R,CH=h-T-B;
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
+  ctx.fillStyle="#123c69";ctx.font="bold 15px system-ui";ctx.fillText(title,L,19);
+  ctx.strokeStyle="#dbe3ef";ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=T+(CH/4)*i;
+    ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(w-R,y);ctx.stroke();
+    ctx.fillStyle="#6b7280";ctx.font="10px system-ui";
+    ctx.fillText(String(Math.round(maxValue-(maxValue/4)*i)),5,y+4);
+  }
+  const pts=values.map((v,i)=>({x:L+(CW/(values.length-1||1))*i,y:T+CH-((v/maxValue)*CH),v}));
+  ctx.strokeStyle="#123c69";ctx.lineWidth=3;ctx.beginPath();
+  pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();
+  pts.forEach((p,i)=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,Math.PI*2);ctx.fillStyle="#f5b041";ctx.fill();
+    ctx.fillStyle="#162033";ctx.font="10px system-ui";ctx.textAlign="center";
+    ctx.fillText(p.v,p.x,p.y-8);
+    ctx.fillStyle="#6b7280";ctx.fillText(labels[i],p.x,h-15);
+  });
+  ctx.textAlign="left";
+}
+function renderCharts(){
+  const dates=last7Dates();
+  const calVals=dates.map(dailyTotalCalories);
+  const maxCal=Math.max(2000,...calVals,Number(document.getElementById("calorieTarget").value||0));
+  drawChart("calorieChart",dates.map(shortIndianDate),calVals,maxCal,"Calories - Last 7 Days");
+  const sevVals=dates.map(dailyMaxSeverity);
+  drawChart("severityChart",dates.map(shortIndianDate),sevVals,5,"Allergy Severity Score");
+}
+function countOverTargetDays(){
+  const target=Number(document.getElementById("calorieTarget").value||0);
+  if(!target)return 0;
+  return [...new Set(entries.map(e=>e.date))].filter(date=>dailyTotalCalories(date)>target).length;
+}
+function renderSummary(){
+  const box=document.getElementById("resultSummary");
+  if(!entries.length){box.innerHTML=`<div class="empty">No entries yet.</div>`;return;}
+  const totalDays=new Set(entries.map(e=>e.date)).size;
+  const totalCal=entries.reduce((s,e)=>s+Number(e.totalCalories||0),0);
+  const avgCal=Math.round(totalCal/entries.length);
+  const avgSev=(entries.reduce((s,e)=>s+Number(e.severity||0),0)/entries.length).toFixed(1);
+  const high=entries.filter(e=>Number(e.severity||0)>=3).length;
+  box.innerHTML=`
+    <div class="summary-line">Recorded days <span class="pill">${totalDays}</span></div>
+    <div class="summary-line">Average calories <span class="pill orange">${avgCal} kcal</span></div>
+    <div class="summary-line">Average severity <span class="pill">${avgSev}/5</span></div>
+    <div class="summary-line">Moderate/high allergy entries <span class="pill red">${high}</span></div>
+    <div class="summary-line">Days above target <span class="pill red">${countOverTargetDays()}</span></div>
+    <div class="summary-line">Learned food calories <span class="pill green">${Object.keys(learnedCalories).length}</span></div>
+  `;
+}
+function renderRanking(){
+  const box=document.getElementById("ranking"),map={};
+  entries.forEach(e=>{
+    e.meals.forEach(m=>{
+      splitFoods(m.food).forEach(food=>{
+        const key=norm(extractQuantity(food).name||food);
+        if(!key)return;
+        if(!map[key])map[key]={name:key,total:0,suspected:0,severitySum:0,calSum:0};
+        map[key].total++;
+        map[key].severitySum+=Number(e.severity||0);
+        map[key].calSum+=Number(m.calories||0);
+        if(m.suspected)map[key].suspected++;
       });
-
-      severity.value = '0';
-
-      suspectIds.forEach(id => {
-        let b = document.getElementById(id);
-        b.classList.remove('active');
-        b.textContent = '□';
-      });
-    }
-
-    function deleteEntry(id){
-      entries = entries.filter(e => e.id !== id);
-      save();
-      render();
-    }
-
-    function splitFoods(t){
-      return String(t || '')
-        .split(/[,;+&/]/)
-        .map(x => x.trim())
-        .filter(Boolean);
-    }
-
-    function allFoodItems(e){
-      return [
-        ...splitFoods(e.breakfast),
-        ...splitFoods(e.midBreakfast),
-        ...splitFoods(e.lunch),
-        ...splitFoods(e.snacks),
-        ...splitFoods(e.dinner)
-      ];
-    }
-
-    function suspectedFoodItems(e){
-      return getSuspectedMeals(e).flatMap(splitFoods);
-    }
-
-    function norm(f){
-      return f.toLowerCase().trim();
-    }
-
-    function analyze(){
-      let foodMap = {};
-      let sus = entries.filter(e => suspectedFoodItems(e).length);
-      let nos = entries.filter(e => !suspectedFoodItems(e).length);
-
-      entries.forEach(e => {
-        allFoodItems(e).forEach(f => {
-          let k = norm(f);
-
-          if(!foodMap[k]){
-            foodMap[k] = {
-              food: f,
-              total: 0,
-              suspectedCount: 0,
-              severitySum: 0
-            };
-          }
-
-          foodMap[k].total++;
-        });
-
-        suspectedFoodItems(e).forEach(f => {
-          let k = norm(f);
-
-          if(!foodMap[k]){
-            foodMap[k] = {
-              food: f,
-              total: 0,
-              suspectedCount: 0,
-              severitySum: 0
-            };
-          }
-
-          foodMap[k].suspectedCount++;
-          foodMap[k].severitySum += Number(e.severity || 0);
-        });
-      });
-
-      let ranking = Object.values(foodMap).map(i => {
-        let exposure = i.total || 1;
-        let rate = i.suspectedCount / exposure;
-        let avg = i.suspectedCount ? i.severitySum / i.suspectedCount : 0;
-        let score = rate * 60 + avg * 8 + i.suspectedCount * 10;
-        let risk = score >= 70 ? 'High' : score >= 35 ? 'Medium' : 'Low';
-
-        return {
-          ...i,
-          suspectRate: rate,
-          avgSeverity: avg,
-          score,
-          risk
-        };
-      }).sort((a,b) => b.score - a.score);
-
-      return {
-        total: entries.length,
-        suspectedEntries: sus,
-        noSuspectEntries: nos,
-        ranking
-      };
-    }
-
-    function lastSevenDays(){
-      let a = [];
-      let n = new Date();
-
-      for(let i = 6; i >= 0; i--){
-        let d = new Date(n);
-        d.setDate(n.getDate() - i);
-
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-
-        a.push(`${y}-${m}-${day}`);
-      }
-
-      return a;
-    }
-
-    function weeklyScores(){
-      return lastSevenDays().map(date => {
-        let score = entries
-          .filter(e => e.date === date)
-          .reduce((s,e) => s + (suspectedFoodItems(e).length ? Number(e.severity || 0) : 0), 0);
-
-        return {
-          date,
-          score
-        };
-      });
-    }
-
-    function drawWeeklyChart(){
-      let c = weeklyChart;
-      let ctx = c.getContext('2d');
-      let w = c.width;
-      let h = c.height;
-
-      ctx.clearRect(0,0,w,h);
-
-      let data = weeklyScores();
-      let max = Math.max(5, ...data.map(d => d.score));
-
-      let pl = 55;
-      let pr = 20;
-      let pt = 25;
-      let pb = 55;
-      let cw = w - pl - pr;
-      let ch = h - pt - pb;
-
-      ctx.strokeStyle = '#dbe3ef';
-      ctx.lineWidth = 1;
-      ctx.font = '13px system-ui';
-      ctx.fillStyle = '#6b7280';
-
-      for(let i = 0; i <= 5; i++){
-        let y = pt + ch - (ch * i / 5);
-
-        ctx.beginPath();
-        ctx.moveTo(pl,y);
-        ctx.lineTo(w - pr,y);
-        ctx.stroke();
-
-        ctx.fillText(String(Math.round(max * i / 5)),18,y + 4);
-      }
-
-      ctx.strokeStyle = '#123c69';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-
-      data.forEach((d,i) => {
-        let x = pl + cw * i / 6;
-        let y = pt + ch - (d.score / max * ch);
-
-        if(i){
-          ctx.lineTo(x,y);
-        } else {
-          ctx.moveTo(x,y);
-        }
-      });
-
-      ctx.stroke();
-
-      data.forEach((d,i) => {
-        let x = pl + cw * i / 6;
-        let y = pt + ch - (d.score / max * ch);
-
-        ctx.fillStyle = d.score >= 4 ? '#c62828' : d.score >= 2 ? '#ef6c00' : '#2e7d32';
-        ctx.beginPath();
-        ctx.arc(x,y,7,0,Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = '#111827';
-        ctx.font = 'bold 13px system-ui';
-        ctx.fillText(String(d.score),x - 4,y - 12);
-
-        ctx.fillStyle = '#6b7280';
-        ctx.font = '12px system-ui';
-        ctx.fillText(shortIndianDate(d.date),x - 17,h - 22);
-      });
-
-      ctx.fillStyle = '#374151';
-      ctx.font = 'bold 14px system-ui';
-      ctx.fillText('Allergy severity score',pl,18);
-    }
-
-    function esc(s){
-      return String(s).replace(/[&<>'"]/g, t => ({
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        "'":'&#39;',
-        '"':'&quot;'
-      }[t]));
-    }
-
-    function mealText(t,s){
-      let safe = esc(t || '-');
-      return s && t ? `${safe} <span class="red-cross">✖</span>` : safe;
-    }
-
-    function riskSpan(r){
-      let cls = r === 'High' ? 'risk-high' : r === 'Medium' ? 'risk-medium' : 'risk-low';
-      return `<span class="${cls}">${r}</span>`;
-    }
-
-    function render(){
-      tbody.innerHTML = '';
-      tfoot.innerHTML = '';
-
-      entries.forEach(e => {
-        let suspected = getSuspectedMeals(e).join(', ');
-        let tr = document.createElement('tr');
-
-        tr.innerHTML = `
-          <td>${esc(formatIndianDate(e.date))}</td>
-          <td>${mealText(e.breakfast,e.suspectBreakfast)}</td>
-          <td>${mealText(e.midBreakfast,e.suspectMidBreakfast)}</td>
-          <td>${mealText(e.lunch,e.suspectLunch)}</td>
-          <td>${mealText(e.snacks,e.suspectSnacks)}</td>
-          <td>${mealText(e.dinner,e.suspectDinner)}</td>
-          <td>${e.severity}</td>
-          <td>${suspected ? '<span class="pill pill-suspect">' + esc(suspected) + '</span>' : '<span class="pill pill-normal">None</span>'}</td>
-          <td><button class="btn-danger" onclick="deleteEntry(${e.id})">Delete</button></td>
-        `;
-
-        tbody.appendChild(tr);
-      });
-
-      let a = analyze();
-      let top = a.ranking[0];
-
-      let text = top
-        ? `Most suspected: ${top.food} | Risk: ${top.risk} | Score: ${top.score.toFixed(0)} | Suspect link: ${Math.round(top.suspectRate * 100)}%`
-        : 'No result yet';
-
-      tfoot.innerHTML = `
-        <tr class="result-row">
-          <td>RESULT</td>
-          <td colspan="8">${esc(text)}</td>
-        </tr>
-      `;
-
-      renderSummary(a);
-      renderRanking(a.ranking);
-      drawWeeklyChart();
-    }
-
-    function renderSummary(a){
-      if(!a.total){
-        summary.innerHTML = 'No entries yet. Add daily entries to generate allergy analysis.';
-        return;
-      }
-
-      let top = a.ranking[0];
-
-      summary.innerHTML = `
-        <strong>Total days/entries:</strong> ${a.total}<br>
-        <strong>Suspected entries:</strong> ${a.suspectedEntries.length}<br>
-        <strong>No suspect entries:</strong> ${a.noSuspectEntries.length}<br>
-        <strong>Most suspected food:</strong> ${top ? esc(top.food) : '-'}<br>
-        <strong>Risk level:</strong> ${top ? riskSpan(top.risk) : '-'}<br>
-        <span class="muted">Repeated red cross against the same food gives a stronger allergy suspicion pattern.</span>
-      `;
-    }
-
-    function renderRanking(r){
-      if(!r.length){
-        ranking.innerHTML = 'Ranking will appear after entries are added.';
-        return;
-      }
-
-      ranking.innerHTML = r.slice(0,8).map((x,i) => `
-        <div style="padding:8px 0;border-bottom:1px solid #e5e7eb">
-          <strong>${i + 1}. ${esc(x.food)}</strong> — ${riskSpan(x.risk)}<br>
-          <span class="small">
-            Food entry: ${x.total} time(s), red cross: ${x.suspectedCount} time(s), suspect link ${Math.round(x.suspectRate * 100)}%, average severity ${x.avgSeverity.toFixed(1)}/5
-          </span>
-        </div>
-      `).join('');
-    }
-
-    function clearAll(){
-      if(confirm('Delete all food entries?')){
-        entries = [];
-        save();
-        render();
-      }
-    }
-
-    function sampleData(){
-      let n = new Date();
-
-      function db(x){
-        let d = new Date(n);
-        d.setDate(n.getDate() - x);
-
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-
-        return `${y}-${m}-${day}`;
-      }
-
-      entries.push(
-        {
-          id:Date.now()+1,
-          date:db(6),
-          breakfast:'poha',
-          midBreakfast:'apple',
-          lunch:'rice, dal',
-          snacks:'tea with milk',
-          dinner:'roti, paneer',
-          suspectBreakfast:false,
-          suspectMidBreakfast:false,
-          suspectLunch:false,
-          suspectSnacks:true,
-          suspectDinner:false,
-          severity:3
-        },
-        {
-          id:Date.now()+2,
-          date:db(5),
-          breakfast:'oats',
-          midBreakfast:'banana',
-          lunch:'rice, curd',
-          snacks:'nuts',
-          dinner:'dal, rice',
-          suspectBreakfast:false,
-          suspectMidBreakfast:false,
-          suspectLunch:true,
-          suspectSnacks:false,
-          suspectDinner:false,
-          severity:2
-        },
-        {
-          id:Date.now()+3,
-          date:db(4),
-          breakfast:'idli',
-          midBreakfast:'papaya',
-          lunch:'roti, dal',
-          snacks:'tea',
-          dinner:'vegetable soup',
-          suspectBreakfast:false,
-          suspectMidBreakfast:false,
-          suspectLunch:false,
-          suspectSnacks:false,
-          suspectDinner:false,
-          severity:0
-        },
-        {
-          id:Date.now()+4,
-          date:db(3),
-          breakfast:'bread, milk',
-          midBreakfast:'orange',
-          lunch:'khichdi',
-          snacks:'biscuits',
-          dinner:'roti, sabzi',
-          suspectBreakfast:true,
-          suspectMidBreakfast:false,
-          suspectLunch:false,
-          suspectSnacks:false,
-          suspectDinner:false,
-          severity:4
-        },
-        {
-          id:Date.now()+5,
-          date:db(2),
-          breakfast:'upma',
-          midBreakfast:'guava',
-          lunch:'rice, dal',
-          snacks:'peanuts',
-          dinner:'roti, paneer',
-          suspectBreakfast:false,
-          suspectMidBreakfast:false,
-          suspectLunch:false,
-          suspectSnacks:true,
-          suspectDinner:false,
-          severity:2
-        }
-      );
-
-      save();
-      render();
-    }
-
-    function downloadCSV(){
-      if(!entries.length){
-        alert('No entries to download.');
-        return;
-      }
-
-      let rows = [
-        ['Date','Breakfast','Mid Breakfast','Lunch','Snacks','Dinner','Severity','Suspected Meal/Food'],
-        ...entries.map(e => [
-          formatIndianDate(e.date),
-          e.breakfast,
-          e.midBreakfast,
-          e.lunch,
-          e.snacks,
-          e.dinner,
-          e.severity,
-          getSuspectedMeals(e).join(', ')
-        ])
-      ];
-
-      let csv = rows
-        .map(r => r.map(c => `"${String(c || '').replace(/"/g,'""')}"`).join(','))
-        .join('\n');
-
-      let blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-      let url = URL.createObjectURL(blob);
-      let a = document.createElement('a');
-
-      a.href = url;
-      a.download = 'daily-food-allergy-tracker.csv';
-      a.click();
-
-      URL.revokeObjectURL(url);
-    }
-
-    let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'block';
     });
+  });
+  const ranked=Object.values(map).map(x=>{
+    const rate=x.suspected/x.total,avg=x.severitySum/x.total,avgCal=Math.round(x.calSum/x.total);
+    return {...x,rate,avg,avgCal,score:Math.round(rate*60+avg*8+x.suspected*5)};
+  }).filter(x=>x.suspected>0||x.avg>=2).sort((a,b)=>b.score-a.score).slice(0,8);
 
-    installBtn.addEventListener('click', async () => {
-      if(!deferredPrompt) return;
-
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-
-      deferredPrompt = null;
-      installBtn.style.display = 'none';
+  if(!ranked.length){box.innerHTML=`<div class="empty">Mark suspected foods with ✖.</div>`;return;}
+  box.innerHTML=ranked.map((x,i)=>`
+    <div class="summary-line">
+      <b>${i+1}. ${x.name}</b> <span class="pill red">Score ${x.score}</span><br>
+      <span class="muted">Suspected ${x.suspected}/${x.total}, avg severity ${x.avg.toFixed(1)}/5, avg kcal ${x.avgCal}</span>
+    </div>
+  `).join("");
+}
+function renderLog(){
+  const body=document.getElementById("logBody");
+  if(!entries.length){body.innerHTML=`<tr><td colspan="11" class="empty">No entries saved.</td></tr>`;return;}
+  const sorted=[...entries].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  body.innerHTML=sorted.map(e=>{
+    const mealText=mealNames.map((n,i)=>{
+      const m=e.meals[i]||{};
+      return `${m.food||"-"}${m.calories?` (${m.calories})`:""}${m.suspected?" ✖":""}`;
     });
-
-    if('serviceWorker' in navigator){
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js');
-      });
-    }
-
-    render();
-  </script>
+    const suspected=e.meals.filter(m=>m.suspected).map(m=>m.name).join(", ")||"-";
+    return `
+      <tr>
+        <td>${formatIndianDate(e.date)}</td>
+        <td>${mealText[0]}</td><td>${mealText[1]}</td><td>${mealText[2]}</td>
+        <td>${mealText[3]}</td><td>${mealText[4]}</td>
+        <td><b>${e.totalCalories||0}</b></td>
+        <td>${e.severity}/5</td>
+        <td>${suspected}</td>
+        <td>${e.notes||"-"}</td>
+        <td><button class="delete-btn" onclick="deleteEntry(${e.id})">Del</button></td>
+      </tr>
+    `;
+  }).join("");
+}
+function exportCSV(){
+  if(!entries.length){alert("No data to export.");return;}
+  const rows=[["Date","Breakfast","Breakfast kcal","Breakfast suspected","Mid-breakfast","Mid kcal","Mid suspected","Lunch","Lunch kcal","Lunch suspected","Snacks","Snacks kcal","Snacks suspected","Dinner","Dinner kcal","Dinner suspected","Total kcal","Severity","Notes"]];
+  entries.forEach(e=>{
+    const r=[formatIndianDate(e.date)];
+    e.meals.forEach(m=>{r.push(m.food||"",m.calories||0,m.suspected?"Yes":"No");});
+    r.push(e.totalCalories||0,e.severity||0,e.notes||"");
+    rows.push(r);
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="allergy-calorie-tracker.csv";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function toggleLog(){
+  document.getElementById("logWrap").classList.toggle("hide-log");
+}
+function renderAll(){
+  saveData();updateMeter();renderCharts();renderSummary();renderRanking();renderLog();
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  makeMealInputs();
+  document.getElementById("entryDate").value=isoToday();
+  document.getElementById("calorieTarget").value=savedTarget;
+  document.getElementById("entryDate").addEventListener("change",renderAll);
+  document.getElementById("calorieTarget").addEventListener("input",renderAll);
+  renderAll();
+});
+</script>
 </body>
 </html>
