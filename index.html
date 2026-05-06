@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
@@ -7,9 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Allergy Calorie">
-<title>Allergy + Calorie Meter</title>
-
-<style>
+<title>Allergy + Calorie Meter</title><style>
 :root{
   --bg1:#fff7ef;
   --bg2:#fffdf8;
@@ -185,7 +182,7 @@ input:focus,select:focus{
 .auto-tag.manual{background:#fff4df;color:#ef8c00}
 .meal-grid{
   display:grid;
-  grid-template-columns:1fr 67px 40px;
+  grid-template-columns:1fr 58px 66px 66px;
   gap:5px;
   align-items:center;
 }
@@ -197,21 +194,30 @@ input:focus,select:focus{
   padding-left:4px;
   padding-right:4px;
 }
-.suspect{
+.sugar-box{
+  text-align:center;
+  font-weight:950;
+  color:#ef8c00;
+  background:#fff9ef;
+  padding-left:4px;
+  padding-right:4px;
+}
+.allergic{
   border:1px solid #eed8d8;
   background:#fff;
-  color:#aaa;
+  color:#8a8d98;
   border-radius:12px;
   padding:8px 0;
-  font-size:14px;
+  font-size:11px;
   font-weight:950;
   cursor:pointer;
 }
-.suspect.active{
+.allergic.active{
   background:#ffe8e8;
   color:var(--red);
   border-color:#f4bbbb;
   box-shadow:0 3px 8px rgba(216,67,67,.12);
+  font-size:17px;
 }
 .row{
   display:grid;
@@ -336,7 +342,7 @@ table{
   width:100%;
   border-collapse:collapse;
   font-size:12px;
-  min-width:760px;
+  min-width:880px;
   background:#fff;
 }
 th,td{
@@ -383,77 +389,69 @@ th{
   .header h1{font-size:17px}
   .logo{width:42px;height:42px;font-size:25px}
   .stats{grid-template-columns:1fr 1fr}
-  .meal-grid{grid-template-columns:1fr 62px 39px}
-  input,select{font-size:13px;padding:8px}
+  .meal-grid{grid-template-columns:1fr 54px 60px 62px}
+  input,select{font-size:13px;padding:8px 5px}
+  .allergic{font-size:10px}
+  .allergic.active{font-size:16px}
 }
-</style>
-</head>
-
-<body>
-<div class="app">
-
-  <div class="header">
+</style></head><body>
+<div class="app">  <div class="header">
     <div class="head-row">
       <div class="logo">🍽️</div>
       <div>
         <h1>Daily Food Allergy + Calorie Meter</h1>
-        <p>Auto kcal • Allergy suspicion • Personal food memory</p>
+        <p>Auto kcal • Sugar peak • Allergy marker • Personal food memory</p>
       </div>
     </div>
+  </div>  <div class="card">
+    <h2 class="card-title">📝 Today’s Entry</h2><div class="top-grid">
+  <div>
+    <label>Date</label>
+    <input type="date" id="entryDate">
   </div>
-
-  <div class="card">
-    <h2 class="card-title">📝 Today’s Entry</h2>
-
-    <div class="top-grid">
-      <div>
-        <label>Date</label>
-        <input type="date" id="entryDate">
-      </div>
-      <div>
-        <label>Target kcal</label>
-        <input type="number" id="calorieTarget" min="0" placeholder="1800">
-      </div>
-    </div>
-
-    <div class="suggest-note">
-      Start typing or tap the food box to choose from your usual meals. Example: <b>2 roti, dal, rice, curd</b>
-    </div>
-
-    <div id="mealsContainer"></div>
-
-    <div class="row">
-      <div>
-        <label>Allergy Severity</label>
-        <select id="severity">
-          <option value="0">0 None</option>
-          <option value="1">1 Very mild</option>
-          <option value="2">2 Mild</option>
-          <option value="3">3 Moderate</option>
-          <option value="4">4 High</option>
-          <option value="5">5 Severe</option>
-        </select>
-      </div>
-      <div>
-        <label>Notes</label>
-        <input type="text" id="notes" placeholder="Optional">
-      </div>
-    </div>
-
-    <button class="btn-main" onclick="addEntry()">➕ Add Entry</button>
-
-    <div class="toolbar">
-      <button class="btn-small blue-btn" onclick="addSample()">Sample</button>
-      <button class="btn-small green-btn" onclick="exportCSV()">Export</button>
-      <button class="btn-small red-btn" onclick="clearAll()">Clear</button>
-    </div>
-
-    <div class="hint">
-      Calories are approximate. Edit kcal if your portion, oil, ghee, sugar or quantity is different.
-    </div>
+  <div>
+    <label>Target kcal</label>
+    <input type="number" id="calorieTarget" min="0" placeholder="1800">
   </div>
+</div>
 
-  <div class="card">
+<div class="suggest-note">
+  Start typing or tap the food box to choose from your usual meals. Example: <b>2 roti, dal, rice, curd</b>. Enter Sugar Peak manually.
+</div>
+
+<div id="mealsContainer"></div>
+
+<div class="row">
+  <div>
+    <label>Allergy Severity</label>
+    <select id="severity">
+      <option value="0">0 None</option>
+      <option value="1">1 Very mild</option>
+      <option value="2">2 Mild</option>
+      <option value="3">3 Moderate</option>
+      <option value="4">4 High</option>
+      <option value="5">5 Severe</option>
+    </select>
+  </div>
+  <div>
+    <label>Notes</label>
+    <input type="text" id="notes" placeholder="Optional">
+  </div>
+</div>
+
+<button class="btn-main" onclick="addEntry()">➕ Add Entry</button>
+
+<div class="toolbar">
+  <button class="btn-small blue-btn" onclick="addSample()">Sample</button>
+  <button class="btn-small green-btn" onclick="exportCSV()">Export</button>
+  <button class="btn-small red-btn" onclick="clearAll()">Clear</button>
+</div>
+
+<div class="hint">
+  Calories are approximate. Edit kcal if your portion, oil, ghee, sugar or quantity is different. Sugar Peak is for your personal glucose peak reading.
+</div>
+
+  </div>  <div class="card">
     <h2 class="card-title">🔥 Today’s Meter</h2>
     <div class="stats">
       <div class="stat"><div class="num" id="todayCalories">0</div><div class="lbl">Today kcal</div></div>
@@ -463,29 +461,19 @@ th{
     </div>
     <div class="meter"><div class="meter-fill" id="calorieMeterFill"></div></div>
     <div class="hint" id="calorieAdvice">Start entering food items.</div>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <h2 class="card-title">📈 Weekly Calories</h2>
     <canvas id="calorieChart" width="500" height="205"></canvas>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <h2 class="card-title">📊 Weekly Allergy Severity</h2>
     <canvas id="severityChart" width="500" height="205"></canvas>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <h2 class="card-title">📋 Summary</h2>
     <div id="resultSummary"></div>
-  </div>
-
-  <div class="card">
-    <h2 class="card-title">⚠️ Suspected Food Ranking</h2>
+  </div>  <div class="card">
+    <h2 class="card-title">⚠️ Allergic Food Ranking</h2>
     <div id="ranking"></div>
-  </div>
-
-  <div class="card">
+  </div>  <div class="card">
     <h2 class="card-title">
       🗂️ Daily Log
       <button class="btn-small purple-btn" onclick="toggleLog()" style="padding:5px 9px">Show/Hide</button>
@@ -495,21 +483,29 @@ th{
         <thead>
           <tr>
             <th>Date</th><th>Breakfast</th><th>Mid</th><th>Lunch</th><th>Snacks</th><th>Dinner</th>
-            <th>Calories</th><th>Severity</th><th>Suspected</th><th>Notes</th><th>Delete</th>
+            <th>Calories</th><th>Sugar Peak</th><th>Severity</th><th>Allergic</th><th>Notes</th><th>Delete</th>
           </tr>
         </thead>
         <tbody id="logBody"></tbody>
       </table>
     </div>
-  </div>
-
-</div>
-
-<script>
+  </div></div><script>
 const mealNames=["Breakfast","Mid-breakfast","Lunch","Snacks","Dinner"];
-let entries=JSON.parse(localStorage.getItem("allergyCalorieEntriesV3")||"[]");
+let entries=JSON.parse(localStorage.getItem("allergyCalorieEntriesV4SugarPeak")||"[]");
 let learnedCalories=JSON.parse(localStorage.getItem("learnedCaloriesV3")||"{}");
 let savedTarget=localStorage.getItem("dailyCalorieTargetV3")||"1800";
+
+const oldEntries=JSON.parse(localStorage.getItem("allergyCalorieEntriesV3")||"[]");
+if(!entries.length && oldEntries.length){
+  entries=oldEntries.map(e=>({
+    ...e,
+    meals:(e.meals||[]).map(m=>({
+      ...m,
+      sugarPeak:m.sugarPeak||"",
+      allergic:m.allergic!=null?m.allergic:!!m.suspected
+    }))
+  }));
+}
 
 const defaultMealSuggestions={
   "Breakfast":[
@@ -717,7 +713,8 @@ function makeMealInputs(){
         </datalist>
 
         <input type="number" id="cal${i}" class="cal-box" min="0" placeholder="kcal">
-        <button type="button" class="suspect" id="suspect${i}" onclick="toggleSuspect(${i})">✖</button>
+        <input type="number" id="sugar${i}" class="sugar-box" min="0" placeholder="Peak">
+        <button type="button" class="allergic" id="allergic${i}" onclick="toggleAllergic(${i})">Allergic</button>
       </div>
     `;
 
@@ -759,12 +756,14 @@ function autoFillCalories(i){
   }
 }
 
-function toggleSuspect(i){
-  document.getElementById(`suspect${i}`).classList.toggle("active");
+function toggleAllergic(i){
+  const btn=document.getElementById(`allergic${i}`);
+  btn.classList.toggle("active");
+  btn.textContent=btn.classList.contains("active") ? "✓" : "Allergic";
 }
 
 function saveData(){
-  localStorage.setItem("allergyCalorieEntriesV3",JSON.stringify(entries));
+  localStorage.setItem("allergyCalorieEntriesV4SugarPeak",JSON.stringify(entries));
   localStorage.setItem("learnedCaloriesV3",JSON.stringify(learnedCalories));
   localStorage.setItem("dailyCalorieTargetV3",document.getElementById("calorieTarget").value||"0");
 }
@@ -799,11 +798,12 @@ function addEntry(){
   const meals=mealNames.map((name,i)=>{
     const food=document.getElementById(`meal${i}`).value.trim();
     const calories=Number(document.getElementById(`cal${i}`).value||0);
-    const suspected=document.getElementById(`suspect${i}`).classList.contains("active");
+    const sugarPeak=document.getElementById(`sugar${i}`).value.trim();
+    const allergic=document.getElementById(`allergic${i}`).classList.contains("active");
 
     learnFromMeal(food,calories);
 
-    return {name,food,calories,suspected};
+    return {name,food,calories,sugarPeak,allergic};
   });
 
   const totalCalories=meals.reduce((s,m)=>s+Number(m.calories||0),0);
@@ -832,12 +832,17 @@ function resetForm(resetDate=true){
   mealNames.forEach((m,i)=>{
     const mealInput=document.getElementById(`meal${i}`);
     const calInput=document.getElementById(`cal${i}`);
-    const suspect=document.getElementById(`suspect${i}`);
+    const sugarInput=document.getElementById(`sugar${i}`);
+    const allergic=document.getElementById(`allergic${i}`);
     const tag=document.getElementById(`found${i}`);
 
     if(mealInput)mealInput.value="";
     if(calInput)calInput.value="";
-    if(suspect)suspect.classList.remove("active");
+    if(sugarInput)sugarInput.value="";
+    if(allergic){
+      allergic.classList.remove("active");
+      allergic.textContent="Allergic";
+    }
     if(tag){
       tag.textContent="Auto";
       tag.className="auto-tag";
@@ -853,11 +858,11 @@ function addSample(){
     id:Date.now(),
     date:isoToday(),
     meals:[
-      {name:"Breakfast",food:"poha, tea, 5 almonds",calories:385,suspected:false},
-      {name:"Mid-breakfast",food:"apple",calories:95,suspected:false},
-      {name:"Lunch",food:"2 roti, dal, rice, curd",calories:700,suspected:false},
-      {name:"Snacks",food:"biscuit, tea",calories:115,suspected:true},
-      {name:"Dinner",food:"soup, roti, sabzi",calories:370,suspected:false}
+      {name:"Breakfast",food:"poha, tea, 5 almonds",calories:385,sugarPeak:"142",allergic:false},
+      {name:"Mid-breakfast",food:"apple",calories:95,sugarPeak:"128",allergic:false},
+      {name:"Lunch",food:"2 roti, dal, rice, curd",calories:700,sugarPeak:"178",allergic:false},
+      {name:"Snacks",food:"biscuit, tea",calories:115,sugarPeak:"165",allergic:true},
+      {name:"Dinner",food:"soup, roti, sabzi",calories:370,sugarPeak:"148",allergic:false}
     ],
     totalCalories:1665,
     severity:2,
@@ -1061,6 +1066,18 @@ function countOverTargetDays(){
     .length;
 }
 
+function averageSugarPeak(){
+  const peaks=[];
+  entries.forEach(e=>{
+    e.meals.forEach(m=>{
+      const p=Number(m.sugarPeak||0);
+      if(p)peaks.push(p);
+    });
+  });
+  if(!peaks.length)return "-";
+  return Math.round(peaks.reduce((s,p)=>s+p,0)/peaks.length);
+}
+
 function renderSummary(){
   const box=document.getElementById("resultSummary");
 
@@ -1078,6 +1095,7 @@ function renderSummary(){
   box.innerHTML=`
     <div class="summary-line">Recorded days <span class="pill blue">${totalDays}</span></div>
     <div class="summary-line">Average calories <span class="pill orange">${avgCal} kcal</span></div>
+    <div class="summary-line">Average sugar peak <span class="pill orange">${averageSugarPeak()}</span></div>
     <div class="summary-line">Average severity <span class="pill blue">${avgSev}/5</span></div>
     <div class="summary-line">Moderate/high allergy entries <span class="pill red">${high}</span></div>
     <div class="summary-line">Days above target <span class="pill red">${countOverTargetDays()}</span></div>
@@ -1096,15 +1114,21 @@ function renderRanking(){
         if(!key)return;
 
         if(!map[key]){
-          map[key]={name:key,total:0,suspected:0,severitySum:0,calSum:0};
+          map[key]={name:key,total:0,allergic:0,severitySum:0,calSum:0,peakSum:0,peakCount:0};
         }
 
         map[key].total++;
         map[key].severitySum+=Number(e.severity||0);
         map[key].calSum+=Number(m.calories||0);
 
-        if(m.suspected){
-          map[key].suspected++;
+        const peak=Number(m.sugarPeak||0);
+        if(peak){
+          map[key].peakSum+=peak;
+          map[key].peakCount++;
+        }
+
+        if(m.allergic || m.suspected){
+          map[key].allergic++;
         }
       });
     });
@@ -1112,24 +1136,26 @@ function renderRanking(){
 
   const ranked=Object.values(map)
     .map(x=>{
-      const rate=x.suspected/x.total;
+      const rate=x.allergic/x.total;
       const avg=x.severitySum/x.total;
       const avgCal=Math.round(x.calSum/x.total);
+      const avgPeak=x.peakCount?Math.round(x.peakSum/x.peakCount):"-";
 
       return {
         ...x,
         rate,
         avg,
         avgCal,
-        score:Math.round(rate*60+avg*8+x.suspected*5)
+        avgPeak,
+        score:Math.round(rate*60+avg*8+x.allergic*5)
       };
     })
-    .filter(x=>x.suspected>0||x.avg>=2)
+    .filter(x=>x.allergic>0||x.avg>=2)
     .sort((a,b)=>b.score-a.score)
     .slice(0,8);
 
   if(!ranked.length){
-    box.innerHTML=`<div class="empty">Mark suspected foods with ✖.</div>`;
+    box.innerHTML=`<div class="empty">Tap Allergic to mark foods with red ✓.</div>`;
     return;
   }
 
@@ -1137,9 +1163,10 @@ function renderRanking(){
     <div class="summary-line">
       <b>${i+1}. ${x.name}</b> <span class="pill red">Score ${x.score}</span><br>
       <span class="muted">
-        Suspected ${x.suspected}/${x.total},
+        Allergic ${x.allergic}/${x.total},
         avg severity ${x.avg.toFixed(1)}/5,
-        avg kcal ${x.avgCal}
+        avg kcal ${x.avgCal},
+        avg sugar peak ${x.avgPeak}
       </span>
     </div>
   `).join("");
@@ -1149,7 +1176,7 @@ function renderLog(){
   const body=document.getElementById("logBody");
 
   if(!entries.length){
-    body.innerHTML=`<tr><td colspan="11" class="empty">No entries saved.</td></tr>`;
+    body.innerHTML=`<tr><td colspan="12" class="empty">No entries saved.</td></tr>`;
     return;
   }
 
@@ -1158,12 +1185,20 @@ function renderLog(){
   body.innerHTML=sorted.map(e=>{
     const mealText=mealNames.map((n,i)=>{
       const m=e.meals[i]||{};
-      return `${m.food||"-"}${m.calories?` (${m.calories})`:""}${m.suspected?" ✖":""}`;
+      const calTxt=m.calories?` (${m.calories})`:"";
+      const peakTxt=m.sugarPeak?` | Peak ${m.sugarPeak}`:"";
+      const allergicTxt=(m.allergic||m.suspected)?" ✓":"";
+      return `${m.food||"-"}${calTxt}${peakTxt}${allergicTxt}`;
     });
 
-    const suspected=e.meals
-      .filter(m=>m.suspected)
+    const allergicMeals=e.meals
+      .filter(m=>m.allergic||m.suspected)
       .map(m=>m.name)
+      .join(", ")||"-";
+
+    const sugarPeaks=e.meals
+      .filter(m=>m.sugarPeak)
+      .map(m=>`${m.name}: ${m.sugarPeak}`)
       .join(", ")||"-";
 
     return `
@@ -1175,8 +1210,9 @@ function renderLog(){
         <td>${mealText[3]}</td>
         <td>${mealText[4]}</td>
         <td><b>${e.totalCalories||0}</b></td>
+        <td>${sugarPeaks}</td>
         <td>${e.severity}/5</td>
-        <td>${suspected}</td>
+        <td>${allergicMeals}</td>
         <td>${e.notes||"-"}</td>
         <td><button class="delete-btn" onclick="deleteEntry(${e.id})">Del</button></td>
       </tr>
@@ -1192,11 +1228,11 @@ function exportCSV(){
 
   const rows=[[
     "Date",
-    "Breakfast","Breakfast kcal","Breakfast suspected",
-    "Mid-breakfast","Mid kcal","Mid suspected",
-    "Lunch","Lunch kcal","Lunch suspected",
-    "Snacks","Snacks kcal","Snacks suspected",
-    "Dinner","Dinner kcal","Dinner suspected",
+    "Breakfast","Breakfast kcal","Breakfast sugar peak","Breakfast allergic",
+    "Mid-breakfast","Mid kcal","Mid sugar peak","Mid allergic",
+    "Lunch","Lunch kcal","Lunch sugar peak","Lunch allergic",
+    "Snacks","Snacks kcal","Snacks sugar peak","Snacks allergic",
+    "Dinner","Dinner kcal","Dinner sugar peak","Dinner allergic",
     "Total kcal","Severity","Notes"
   ]];
 
@@ -1204,7 +1240,7 @@ function exportCSV(){
     const r=[formatIndianDate(e.date)];
 
     e.meals.forEach(m=>{
-      r.push(m.food||"",m.calories||0,m.suspected?"Yes":"No");
+      r.push(m.food||"",m.calories||0,m.sugarPeak||"",(m.allergic||m.suspected)?"Yes":"No");
     });
 
     r.push(e.totalCalories||0,e.severity||0,e.notes||"");
@@ -1220,7 +1256,7 @@ function exportCSV(){
 
   const a=document.createElement("a");
   a.href=url;
-  a.download="allergy-calorie-tracker.csv";
+  a.download="allergy-calorie-sugar-peak-tracker.csv";
 
   document.body.appendChild(a);
   a.click();
@@ -1253,6 +1289,5 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   renderAll();
 });
-</script>
-</body>
+</script></body>
 </html>
